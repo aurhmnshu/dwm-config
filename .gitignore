@@ -1,0 +1,10 @@
+# Compiled binaries
+dwm
+drw.o
+dwm.o
+util.o
+# Backup files
+*.rej
+*.orig
+# Editor swap files
+.*.swp
