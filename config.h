@@ -1,14 +1,13 @@
 /* See LICENSE file for copyright and license details. */
-/* Add at the top with other includes */
-
+#include <X11/XF86keysym.h>
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int gappx     = 6;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 0;        /* 0 means bottom bar */
+static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "Liberation Sans:size=14","Apple Color Emoji:size=10" };
-static const char dmenufont[]       = "Liberation Sans:size=14";
+//static const char dmenufont[]       = "Liberation Sans:size=14";
 static const char col_gray1[]       = "#263b24";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -60,17 +59,37 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *dmenucmd[] = { "rofi", "-show", "drun", NULL };
+//static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+//static const char *roficmd[] = { "rofi", "-show", "drun", NULL };
+//static const char *dmenucmd[] = { "j4-dmenu-desktop", "--dmenu=dmenu_run", NULL };
 static const char *termcmd[]  = { "st", NULL };
-/* Commands for brightness control */
-/* Using a specific device */
-//static const char *upbright[]   = { "brightnessctl", "--device=acpi_video0", "set", "+10%", NULL };
-//static const char *downbright[] = { "brightnessctl", "--device=acpi_video0", "set", "10%-", NULL };
+
+//static const char *brightup[] = { "brightnessctl", "s", "+10%", NULL };
+//static const char *brightdown[] = { "brightnessctl", "s", "10%-", NULL };
+static const char *redshift_on[] = { "redshift", "-O", "4000", NULL };
+static const char *redshift_off[] = { "redshift", "-x", NULL };
+
+static const char *brightup[] = { "sh", "-c", "brightnessctl s +10%; pct=$(brightnessctl -m | cut -d, -f4 | tr -d '%'); killall herbe 2>/dev/null; herbe \"Brightness: $pct%\"", NULL };
+static const char *brightdown[] = { "sh", "-c", "brightnessctl s 10%-; pct=$(brightnessctl -m | cut -d, -f4 | tr -d '%'); killall herbe 2>/dev/null; herbe \"Brightness: $pct%\"", NULL };
+
+static const char *volup[] = { "sh", "-c", "pactl set-sink-volume @DEFAULT_SINK@ +5%; volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '/Volume:/ {print $5}' | tr -d '%'); killall herbe 2>/dev/null; herbe \"Volume: $volume%\"", NULL };
+static const char *voldown[] = { "sh", "-c", "pactl set-sink-volume @DEFAULT_SINK@ -5%; volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '/Volume:/ {print $5}' | tr -d '%'); killall herbe 2>/dev/null; herbe \"Volume: $volume%\"", NULL };
+static const char *volmute[] = { "sh", "-c", "pactl set-sink-mute @DEFAULT_SINK@ toggle; if pactl get-sink-mute @DEFAULT_SINK@ | grep -q 'yes'; then killall herbe 2>/dev/null; herbe 'Muted'; else volume=$(pactl get-sink-volume @DEFAULT_SINK@ | awk '/Volume:/ {print $5}' | tr -d '%'); killall herbe 2>/dev/null; herbe \"Volume: $volume%\"; fi", NULL };
+
+static const char *dolphin[] = { "dolphin", NULL };
+static const char *flameshot_gui[] = { "flameshot", "gui", NULL };
+static const char *firefox[] = { "firefox", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+ 	{ 0,                            XK_Print,  spawn,          {.v = flameshot_gui } },
+ 	{ MODKEY,                       XK_e,      spawn,          {.v = dolphin } },
+ 	{ MODKEY,                       XK_f,      spawn,          {.v = firefox } },
+ 	{ MODKEY,                       XK_n,      spawn,          {.v = redshift_on } },
+ 	{ MODKEY|ShiftMask,             XK_n,      spawn,          {.v = redshift_off } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -82,7 +101,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_w,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_v,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_s,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
@@ -92,6 +111,11 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ 0, XF86XK_MonBrightnessUp,   spawn, {.v = brightup } },
+	{ 0, XF86XK_MonBrightnessDown, spawn, {.v = brightdown } },
+	{ 0, XF86XK_AudioRaiseVolume, spawn, {.v = volup } },
+	{ 0, XF86XK_AudioLowerVolume, spawn, {.v = voldown } },
+	{ 0, XF86XK_AudioMute,        spawn, {.v = volmute } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
