@@ -8,4 +8,4 @@ feh --bg-fill ~/Pictures/wp8.jpg &
 flameshot &
 slstatus &
 herbe &
-picom &
+picom --config ~/.config/picom/picom.conf &
