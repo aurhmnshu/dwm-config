@@ -1,4 +1,4 @@
-# a very minimal dwm + st + slstatus + picom setup
+# a very minimalist dwm + st + slstatus + picom setup
 ![Screenshot](images/ss2.png)
 ![Screenshot](images/ss1.png)
 ## Wallpaper
