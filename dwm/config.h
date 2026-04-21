@@ -79,7 +79,10 @@ static const char *dolphin[] = { "dolphin", NULL };
 static const char *flameshot_gui[] = { "flameshot", "gui", NULL };
 static const char *firefox[] = { "firefox", NULL };
 static const char *wificmd[] = { "iwmenu", "-l", "rofi", NULL };
-
+/* Toggle Picom */
+static const char *picom_on[] = { "picom", NULL};
+static const char *picom_off[] = { "pkill","picom", NULL};
+/* Keybinds */
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
@@ -90,6 +93,8 @@ static const Key keys[] = {
  	{ MODKEY,                       XK_n,      spawn,          {.v = redshift_on } },
  	{ MODKEY|ShiftMask,             XK_n,      spawn,          {.v = redshift_off } },
  	{ MODKEY|ShiftMask,             XK_space,  spawn,          {.v = wificmd } },
+    { MODKEY|ShiftMask,             XK_p,      spawn,          {.v = picom_on } },
+    { MODKEY|ShiftMask,             XK_o,      spawn,          {.v = picom_off } }
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
